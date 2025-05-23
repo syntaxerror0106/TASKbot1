@@ -36,4 +36,4 @@ async def removetask(ctx, index: int):
         await ctx.send("❌ Invalid task number.")
 
 # Run the bot
-bot.run("PASTE_YOUR_TOKEN_HERE")
+bot.run("MTM3NTQyOTM5NTMzNzk3MzgzMw.GQZFlK.sh9vznHqGCR_I_ksNdwU8irO7wuR2FxiN8_DaA")
