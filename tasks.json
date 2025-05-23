@@ -1,1 +1,56 @@
+import discord
+from discord.ext import commands
+import json
+import os
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+TASKS_FILE = "tasks.json"
+
+# Load tasks from file if it exists
+if os.path.exists(TASKS_FILE):
+    with open(TASKS_FILE, "r") as f:
+        tasks = json.load(f)
+        # Convert string keys back to integers
+        tasks = {int(k): v for k, v in tasks.items()}
+else:
+    tasks = {}
+
+# Save tasks to file
+def save_tasks():
+    with open(TASKS_FILE, "w") as f:
+        json.dump(tasks, f)
+
+@bot.command()
+async def addtask(ctx, *, task):
+    user = ctx.author.id
+    tasks.setdefault(user, []).append(task)
+    save_tasks()
+    await ctx.send(f"✅ Task added for {ctx.author.name}: `{task}`")
+
+@bot.command()
+async def listtasks(ctx):
+    user = ctx.author.id
+    user_tasks = tasks.get(user, [])
+    if not user_tasks:
+        await ctx.send("❌ You have no tasks.")
+    else:
+        msg = "\n".join(f"{i+1}. {t}" for i, t in enumerate(user_tasks))
+        await ctx.send(f"📝 Your tasks:\n{msg}")
+
+@bot.command()
+async def removetask(ctx, index: int):
+    user = ctx.author.id
+    user_tasks = tasks.get(user, [])
+    if 0 < index <= len(user_tasks):
+        removed = user_tasks.pop(index - 1)
+        save_tasks()
+        await ctx.send(f"🗑️ Removed task: `{removed}`")
+    else:
+        await ctx.send("❌ Invalid task number.")
+
+bot.run("MTM3NTQyOTM5NTMzNzk3MzgzMw.GQZFlK.sh9vznHqGCR_I_ksNdwU8irO7wuR2FxiN8_DaA")
 
